@@ -7,7 +7,7 @@
 {% block body %}
     <ul>
         {% for question in questions %}
-            <li class="block block-shadow d-flex flex-row mb-20">
+            <a href="{{ path('question_show', {id: question.id}) }}" class="block block-shadow d-flex flex-row mb-20">
                 <div class="d-flex flex-column mr-20 align-items-center">
                     <i class="fas fa-arrow-up {{ question.rating > 0 ? 'rating-up' : '' }}"></i>
                         <p class="text-small
@@ -27,16 +27,16 @@
                     </div>
                     <div class="d-flex flex-row justify-content-between">
                         <div class="d-flex flex-row align-items-center">
-                            <img src="{{ question.author.avatar }}" alt="Profile picture" class="avatar mr-20">
-                            <small>Demandé par <span class="clickable">{{ question.author.name }}</span></small>
+                            <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Profile picture" class="avatar mr-20">
+                            <small>Demandé par <span class="clickable">Un Monsieur</span></small>
                         </div>
                         <div class="d-flex flex-row align-items-center">
                             <i class="fas fa-comment mr-20"></i>
-                            <p>{{ question.nbReponse }}</p>
+                            <p>2</p>
                         </div>
                     </div>
                 </div>
-            </li>
+            </a>
         {% endfor %}
     </ul>
 {% endblock %}
