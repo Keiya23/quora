@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -22,7 +24,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/signup', name: 'signup')]
-    public function signup(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, UserAuthenticatorInterface $userAuthenticator): Response
+    public function signup(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, UserAuthenticatorInterface $userAuthenticator, MailerInterface $mailer): Response
     {
         $user = new User();
         $userForm = $this->createForm(UserType::class, $user);
@@ -35,6 +37,19 @@ class SecurityController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Bienvenue sur Quora');
+
+            // Envoi d'email de bienvenue
+
+            $welcomeEmail = new TemplatedEmail();
+            $welcomeEmail->to($user->getEmail())
+                ->subject('Bienvenue sur Quora')
+                ->htmlTemplate('@email_templates/welcome.html.twig')
+                ->context(
+                    ['username' => $user->getFirstname()]
+                );
+            $mailer->send($welcomeEmail);
+
+
             return $userAuthenticator->authenticateUser($user, $this->formLoginAuthenticator, $request);
         }
 
